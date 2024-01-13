@@ -7,13 +7,14 @@ const roleController = require('./controllers/roleController');
 const roomController = require('./controllers/roomController');
 const tableController = require('./controllers/tableController');
 const userController = require('./controllers/userController');
+const logger = require('node-color-log');
 
 
 module.exports = (server) => {
   const io = socketIo(server);
   io.on('connection', (socket) => {
-    console.log('New client connected');
-    socket.on('disconnect', () => console.log('Client disconnected'));
+    logger.info('New client connected => ' + socket.id);
+    socket.on('disconnect', () => logger.info('Client disconnected => ' + socket.id));
 
     // Add your controllers here
     authController(socket);
