@@ -3,59 +3,45 @@ const mongoose = require("mongoose");
 const Order = mongoose.model(
     "Order",
     new mongoose.Schema({
-        orderId: {
-            type: Number,
-        },
-        timestamp: {
-            type: Date,
-            default: Date.now,
-        },
-        roomName: {
-            type: String,
-            required: true,
+        ordered:{
+            at: Date,
+            by: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
         },
         table: {
             type: String,
-            required: true,
         },
-        hasBeenServed: {
-            type: Boolean,
-            default: false,
+        served:{
+            at: Date,
+            by: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
         },
-        hasBeenPlaced: {
-            type: Boolean,
-            default: false,
+        placed:{
+            at: Date,
+            by: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
+
         },
         products: {
-            type: Map,
-            key: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Product"
             },
-            value: {
+            amount: {
                 type: Number,
-                required: true
+                default: 0
             },
-            required: true,
-        },
-        totalUnpaidPrice: {
-            type: Number,
-            required: true,
-            default: 0,
-        },
-        totalPaidPrice: {
-            type: Number,
-            required: true,
-            default: 0,
         },
         isDone: {
             type: Boolean,
             default: false,
         },
-        orderOrigin: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
     })
 );
 

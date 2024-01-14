@@ -3,17 +3,33 @@ const mongoose = require("mongoose");
 const Table = mongoose.model(
     "Table",
     new mongoose.Schema({
-        tableId: Number,
-        name: String,
+        number: Number,
         type: String,
-        form: String,
         seats: Number,
-        hasReservation: {
-            type: Boolean,
-            default: false
+        form: [
+            {
+                x: Number,
+                y: Number
+            }
+        ],
+        pos:{
+            x: Number,
+            y: Number
         },
-        reservationIds: [String],
+        reservations:[
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Reservation"
+            }
+        ],
         room: String,
+        created:{
+            at: Date,
+            by: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
+        },
     })
 );
 

@@ -1,23 +1,32 @@
+const { verifyToken } = require('../middlewares/checkAuth');
+const { checkRole } = require('../middlewares/checkRole');
 const Order = require('../models/Order');
 
 module.exports = (socket) => {
-  socket.on('putOrder', async (data) => {
+
+  const putOrder = 'putOrder';
+  socket.on(putOrder, async (data) => {
     const order = new Order(data);
     try {
       await order.save();
-      socket.emit('createOrder', { status: 'ok' });
+      socket.emit(putOrder, { status: 'ok' });
     } catch (error) {
-      socket.emit('createOrder', { status: 'error', error: error.message });
+      socket.emit(putOrder, { status: 'error', error: error.message });
     }
   });
 
-  socket.on('getOrders', async (data) => {
+  const getAllOrders = 'getAllOrders';
+  socket.on(getAllOrders, async (data) => {
+    
+    if(await verifyToken(getAllOrders, socket, data) == false) return;
+    if(await checkRole(getAllOrders, socket, data, ['admin']) == false) return;
+
     const orders = await Order.find();
     try {
-      socket.emit('getOrders', { status: 'ok', data: orders });
+      socket.emit(getAllOrders, { status: 'ok', data: orders });
     }
     catch (error) {
-      socket.emit('getOrders', { status: 'error', error: error.message });
+      socket.emit(getAllOrders, { status: 'error', error: error.message });
     }
   });
 };

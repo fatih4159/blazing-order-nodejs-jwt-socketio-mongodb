@@ -3,13 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('node-color-log');
 const jwt_secret = process.env.JWT_SECRET;
+const { verifyToken } = require('../middlewares/checkAuth');
 
 
 
 module.exports = (socket) => {
   socket.on('register', async (data) => {
     const parsedData = JSON.parse(data);
-
     logger.info("Registering user with username " + parsedData.username + " and password " + parsedData.password)
     username = parsedData.username;
     password = parsedData.password;
@@ -35,7 +35,10 @@ module.exports = (socket) => {
     if (user && await bcrypt.compare(password, user.password)) {
       const token = jwt.sign({ username: user.username }, jwt_secret);
       logger.info("User with username " + username + " has logged in")
+      socket.user = user;
+      socket.token = token;
       socket.emit('login', { status: 'ok', token });
+
     } else {
       logger.error("Invalid credentials")
       socket.emit('login', { status: 'error', error: 'Invalid credentials' });
@@ -43,20 +46,6 @@ module.exports = (socket) => {
   });
 
   socket.on('verifyToken', async (data) => {
-    const { token } = data;
-    try {
-      const decoded = jwt.verify(token, 'secretKey');
-      const user = await User.findOne({ username: decoded.username });
-      if (user) {
-        logger.info("Token verified for user with username " + decoded.username)
-        socket.emit('verifyToken', { status: 'ok', user });
-      } else {
-        logger.error("User not found")
-        socket.emit('verifyToken', { status: 'error', error: 'User not found' });
-      }
-    } catch (error) {
-      logger.error("Invalid token")
-      socket.emit('verifyToken', { status: 'error', error: 'Invalid token' });
-    }
+    await verifyToken(socket, data);
   });
 };
