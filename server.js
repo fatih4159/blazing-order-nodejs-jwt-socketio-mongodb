@@ -29,7 +29,7 @@ logger.info(`Connecting to ${uri}...`);
 
         const server = http.createServer(app);
         socketSetup(server);
-        //fillDatabase();
+        fillDatabase();
 
         server.listen(port, host, () => logger.info(`Server listening on ${host}:${port}!`));
     } catch (err) {
