@@ -4,11 +4,11 @@ const Order = mongoose.model(
     "Order",
     new mongoose.Schema({
         ordered:{
-            at: Date,
             by: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
             },
+            at: Date,
         },
         table: {
             type: String,

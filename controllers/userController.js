@@ -20,11 +20,14 @@ module.exports = (socket) => {
     }
   });
 
+
   const getUsers = 'getUsers';
   socket.on('getUsers', async (data) => {
-
     if(await verifyToken(getUsers, socket, data) == false) return;
     if(await checkRole(getUsers, socket, data, ['admin']) == false) return;
+
+
+
 
     const users = await User.find();
     try {
