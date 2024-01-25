@@ -1,15 +1,17 @@
 const User = require('../models/User');
-const { verifyToken } = require('../middlewares/checkAuth');
-const { checkRole } = require('../middlewares/checkRole');
+/**
+ * Requires the 'checkAuth' middleware module and assigns the 'verifyToken' and 'checkRole' functions to variables.
+ * @module userController
+ * @requires ../middlewares/checkAuth
+ * @type {Object}
+ * @property {Function} verifyToken - Function for verifying authentication token.
+ * @property {Function} checkRole - Function for checking user role.
+ */
+const { verifyToken, checkRole } = require('../middlewares/checkAuth');
 
 module.exports = (socket) => {
-
-  
-  const putUser = 'putUser';
-  socket.on('putUser', async (data) => {
-    
-    if(await verifyToken(putUser, socket, data) == false) return;
-    if(await checkRole(putUser, socket, data, ['admin']) == false) return;
+  socket.on('createUser', async (data) => {
+    if(!(await verifyToken('createUser', socket, data) && await checkRole('putUser', socket, data, ['admin']))) return;
 
     const user = new User(data);
     try {
@@ -20,20 +22,17 @@ module.exports = (socket) => {
     }
   });
 
-
-  const getUsers = 'getUsers';
   socket.on('getUsers', async (data) => {
-    if(await verifyToken(getUsers, socket, data) == false) return;
-    if(await checkRole(getUsers, socket, data, ['admin']) == false) return;
+    if(!(await verifyToken('getUsers', socket, data) && await checkRole('getUsers', socket, data, ['admin']))) return;
 
-
-
-
-    const users = await User.find();
     try {
+      /**
+       * Retrieves all users from the database.
+       * @returns {Promise<Array<User>>} A promise that resolves to an array of User objects.
+       */
+      const users = await User.find();
       socket.emit('getUsers', { status: 'ok', data: users });
-    }
-    catch (error) {
+    } catch (error) {
       socket.emit('getUsers', { status: 'error', error: error.message });
     }
   });

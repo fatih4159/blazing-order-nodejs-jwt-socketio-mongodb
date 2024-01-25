@@ -1,8 +1,19 @@
+/**
+ * This module exports a function that takes a socket object and sets up event listeners for 'addReservation' and 'getAllReservations' events.
+ * @module reservationController
+ * @param {object} socket - The socket object from the client.
+ */
+
 const Reservation = require('../models/Reservation');
 const {verifyToken} = require("../middlewares/checkAuth");
 const {checkRole} = require("../middlewares/checkRole");
 
 module.exports = (socket) => {
+  /**
+   * Event listener for 'addReservation' event. It handles reservation creation.
+   * @listens socket:addReservation
+   * @param {string} data - The reservation data in JSON format.
+   */
   socket.on('addReservation', async (data) => {
     try {
       if(await verifyToken(getUsers, socket, data) && await checkRole(getUsers, socket, data, ['admin'])) {
@@ -15,6 +26,11 @@ module.exports = (socket) => {
     }
   });
 
+  /**
+   * Event listener for 'getAllReservations' event. It retrieves all reservations if the authenticated user is an admin.
+   * @listens socket:getAllReservations
+   * @param {string} data - The user data in JSON format.
+   */
   socket.on('getAllReservations', async (data) => {
     try {
       if(await verifyToken(getUsers, socket, data) && await checkRole(getUsers, socket, data, ['admin'])) {

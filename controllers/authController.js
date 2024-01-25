@@ -1,3 +1,9 @@
+/**
+ * This module exports a function that takes a socket object and sets up event listeners for 'register', 'login', and 'verifyToken' events.
+ * @module authController
+ * @param {object} socket - The socket object from the client.
+ */
+
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -6,6 +12,11 @@ const jwt_secret = process.env.JWT_SECRET;
 const { verifyToken } = require('../middlewares/checkAuth');
 
 module.exports = (socket) => {
+  /**
+   * Event listener for 'register' event. It handles user registration.
+   * @listens socket:register
+   * @param {string} data - The user data in JSON format.
+   */
   socket.on('register', async (data) => {
     try {
       const parsedData = JSON.parse(data);
@@ -28,6 +39,11 @@ module.exports = (socket) => {
     }
   });
 
+  /**
+   * Event listener for 'login' event. It handles user login.
+   * @listens socket:login
+   * @param {string} data - The user data in JSON format.
+   */
   socket.on('login', async (data) => {
     try {
       const parsedData = JSON.parse(data);
@@ -50,6 +66,11 @@ module.exports = (socket) => {
     }
   });
 
+  /**
+   * Event listener for 'verifyToken' event. It verifies the user's token.
+   * @listens socket:verifyToken
+   * @param {string} data - The user data in JSON format.
+   */
   socket.on('verifyToken', async (data) => {
     try {
       await verifyToken(socket, data);

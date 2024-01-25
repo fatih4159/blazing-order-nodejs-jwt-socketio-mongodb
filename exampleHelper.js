@@ -13,6 +13,12 @@ const Order = require('./models/Order');
 const Reservation = require('./models/Reservation');
 
 module.exports.fillDatabase = async () => {
+    // create basic roles
+    const roleAdmin = new Role({ name: 'admin' });
+    const roleUser = new Role({ name: 'user' });
+    const roleStaff = new Role({ name: 'staff' });
+    const roleManager = new Role({ name: 'manager' });
+    
     //createUser('admin', 'admin', ['admin']);
     //setUserRoles('admin', ['admin']);
 
