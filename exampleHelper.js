@@ -11,19 +11,27 @@ const Room = require('./models/Room');
 const Table = require('./models/Table');
 const Order = require('./models/Order');
 const Reservation = require('./models/Reservation');
+const DEFAULT_ROLES = require('./constants/role.constants')
+const DEFAULT_USERS = require('./constants/user.constants')
 
 module.exports.fillDatabase = async () => {
-    // create basic roles
-    const roleAdmin = new Role({ name: 'admin' });
-    const roleUser = new Role({ name: 'user' });
-    const roleStaff = new Role({ name: 'staff' });
-    const roleManager = new Role({ name: 'manager' });
+    // create for each Role in ROLES a Role
+    for (const role of DEFAULT_ROLES) {
+        await createRole(role);
+    }
+}
+
+async function createRole(roleName) {
+    logger.info('creating default role for ',roleName)
+    const existingRole = await Role.findOne({ name: roleName });
+    if (existingRole) {
+        logger.info('Role ',existingRole,'already exists');
+        return;
+    }
     
-    //createUser('admin', 'admin', ['admin']);
-    //setUserRoles('admin', ['admin']);
-
-
-
+    const role = new Role({ name: roleName });
+    logger.info("created role: " + role);
+    role.save();
 }
 
 async function createUser(username, password, roles) {
